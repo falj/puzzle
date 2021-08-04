@@ -1,0 +1,157 @@
+                               
+   <!-- Created on 08/2021           -->
+   <!-- @author: falj                -->
+   <!-- @site: mathgames.falj.net    -->
+                               
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Puzzles</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-8 col-sm-push-2">
+          <h1 class="text-center">Puzzles</h1>
+          <hr/>
+          <br/>
+        </div>
+      </div>
+      <div>
+	<h3 class="text-center" id="account_title"></h3>
+      </div>
+      <div>
+	<p><strong>For now, the contract is available only on the Rinkeby Test Network. Please switch your metamask to the right network before creation.</strong>
+	</div>  
+      <div>
+	For creators, please link your full path directory which will contain :
+	<ul>
+	  <li>index.html</li>
+	  <li>cover.png</li>
+	  <li>all necessary files for your puzzle</li>
+	</ul>
+	
+	<p>Make sure to note your Puzzle Id and to check your response. The response hash is the hexadecimal sha256 hash of the real response ('0x...').
+	  <p>You can also make your puzzle code open, add your twitter in the description or do whatever you think of in order to increase the confidence of the players.
+      </div>
+      <form id="form-inline">
+	    <label for="Puzzle Id" class="col-xs-2 col-form-label">Puzzle Id</label>
+	    <div class="col-xs-2">
+	      <input type="text" class="form-control" id="puzzleIdInput" placeholder="Puzzle Id">
+	    </div>
+	  <button type="button" class="btn btn-primary btn-details" onclick="App.getDetails()">Details</button>
+	  <button type="button" class="btn btn-primary btn-new" onclick="App.createNewPuzzle()">New</button> 
+	  
+    </form>
+      <hr>
+      <form id="form">
+	<div class="form-group row">
+	  <label for="name" class="col-sm-2 col-form-label">Name</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="nameInput" placeholder="Name of Puzzle">
+	    </div>
+	</div>
+	<div class="form-group row">
+	  <label for="description" class="col-sm-2 col-form-label">Description</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="descriptionInput" placeholder="Description of Puzzle">
+	    </div>
+	</div>
+	<div class="form-group row">
+	  <label for="link" class="col-sm-2 col-form-label">Link</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="linkInput" placeholder="Link to Puzzle">
+	    </div>
+	</div>
+	<div class="form-group row">
+	  <label for="creator" class="col-sm-2 col-form-label">Creator</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="creatorInput" placeholder="Creator">
+	    </div>
+	</div>
+	<div class="form-group row">
+	  <label for="reward" class="col-sm-2 col-form-label">Reward</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="rewardInput" placeholder="Reward">
+	    </div>
+	</div>
+	<div class="form-group row">
+	  <label for="creator-cut" class="col-sm-2 col-form-label">Creator Cut (%)</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="cutInput" placeholder="Creator Cut">
+	    </div>
+	</div>
+	<div class="form-group row">
+	  <label for="min-fee" class="col-sm-2 col-form-label">Minimum Fee</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="minfeeInput" placeholder="Minimum Fee">
+	  </div>
+	</div>
+	<div class="form-group row">
+	  <label for="Response Hash" class="col-sm-2 col-form-label">Response Hash</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="hashInput" placeholder="Response Hash ('0x...')">
+	  </div>
+	</div>
+      </form>
+      <button  class="btn btn-primary btn-create" id="btn-create" onclick="App.handleCreatePuzzle()">Create</button>
+      <hr>
+      <form id="form2">
+	<div class="form-group row">
+	  <label for="response" class="col-sm-2 col-form-label">response</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="responseInput" placeholder="response">
+	    </div>
+	</div>
+	<div class="form-group row">
+	  <label for="Puzzle Checked" class="col-sm-2 col-form-label">Puzzle Checked</label>
+	  <div class="col-sm-10">
+	    <input type="text" readonly class="form-control" id="puzzleCheckInput" placeholder="false">
+	  </div>
+	</div>
+	<!-- <button class="btn  btn-primary btn-check" onclick="App.handleCheckPuzzle()">Check</button> -->
+      </form>
+	<button class="btn  btn-primary btn-check" onclick="App.handleCheckPuzzle()" id="btn-check">Check</button>
+
+<!-- Modal -->
+<div class="modal fade" id="transactionModal" tabindex="-1" role="dialog" aria-labelledby="wait for transaction" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Waiting for transacction</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+	waiting for transaction to confirm...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/ethers-5.2.umd.min.js" type="application/javascript"></script>
+    <script src="js/createPuzzle.js"></script>
+  </body>
+</html>
