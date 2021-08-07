@@ -8,7 +8,7 @@
 
 App = {
     // To change with your actual puzzle id
-    puzzleId:7,
+    puzzleId:0,
 
     web3Provider: null,
     contracts: {},
@@ -17,19 +17,20 @@ App = {
     puzzleInstance:null,
     puzzleInstanceSigned:null,
     accountSigned:false,
-    accountIsWinner:true,
-    contractAddress:"0xA6FcF3B78E97d7f86ADF8927232a20EC589a68cD",
+    accountIsWinner:false,
+    contractAddress:"",
     chainId : 4,
-    
+    codes: null,
+    advices: null,
+    start: false,
     puzzle :{
-    	open:false,
+    	open:true,
     	creator: null,
     	name: null,
     	description: null,
     	creation: null,
     	end: null,
     	link: null,
-    	checked: false,
     	cut: "",
     	minFee: "",
     	reward: "",
@@ -39,26 +40,36 @@ App = {
 	finalReward:"",
     },
 
+    
     init: async function() {
 	if (typeof window.ethereum == 'undefined') {
-	    alert('consider installing metamask');
+	    alert('consider installing metamask or start your crypto wallet');
 	} else {
 	    return await App.initWeb3();
 	}
     },
     
-    initWeb3: async function() {
+    initWeb3: function() {
 	web3Provider = new ethers.providers.Web3Provider(window.ethereum)
-    	return App.initContract();
+	ethereum.on('chainChanged', (_chainId) => window.location.reload());
+	web3Provider.getNetwork().then(cid=>{
+	    if(cid.chainId == App.chainId) {
+    		return App.initContract();
+	    } else {
+		alert('please change network to Rinkeby');
+	    }
+	});
     },
     
     initContract: function() {
-    	$.getJSON('json/Puzzles-abi.json', function(data) {
-    	    var PuzzleABI = data;
+    	$.getJSON('json/Puzzles.json', function(data) {
+	    var PuzzleABI = data['abi'];
+    	    App.contractAddress = data['networks']['4']['address'];
     	    App.puzzleInstance = new ethers.Contract(App.contractAddress, PuzzleABI, web3Provider);
     	    return App.puzzleInfo();
-    	})
-    	return App.getAccount();
+    	}).then(()=> {
+    	    return App.getAccount();
+	});
     },
 
     getAccount: function () {
@@ -67,61 +78,61 @@ App = {
 	    App.signer = web3Provider.getSigner();
 	    App.account = accounts[0];
 	    App.reloadAccount();
-    	    window.ethereum.on('accountsChanged', function (result) {
+	    window.ethereum.on('accountsChanged', function (result) {
     		accounts = result;
     		App.account = accounts[0];
 		App.signer = web3Provider.getSigner();
 	    	alert('account changed\nnow connected with '+App.account);
 		App.reloadAccount();
-    	    });
+	    });
     	});
     },
     
     puzzleInfo: function () {
-    	App.puzzleInstance.getPuzzleInfo(App.puzzleId).then((result)=>{
-    	    App.puzzle.creator = result[0];
-    	    App.puzzle.name = result[1];
-    	    App.puzzle.description = result[4];
-    	    App.puzzle.link = result[2];
-    	    App.puzzle.creation = result[3][0];
-    	    App.puzzle.end = result[3][1];
-    	    return (result[3][1].toNumber()==0);
-    	}).then( (open) => {
-    	    App.puzzle.open=open;
-    	    return App.puzzleInstance.puzzleIsChecked(App.puzzleId);
-    	}).then(function(result) {
-    	    App.puzzle.checked = result;
-    	    if( App.puzzle.checked ) {
+    	$.getJSON('json/puzzle-data.json', function(data) {
+	    App.codes = data['codes'];
+	    App.advices = data['advices'];
+	    App.puzzleId = data['puzzleId'];
+	    return App.puzzleId;
+	}).then(function(result) {
+	    App.puzzleInstance.getPuzzleInfo(App.puzzleId).then((result)=>{
+		App.puzzle.creator = result[0];
+    		App.puzzle.name = result[1];
+    		App.puzzle.description = result[4];
+    		App.puzzle.link = result[2];
+    		App.puzzle.creation = result[3][0];
+    		App.puzzle.end = result[3][1];
+    		return (result[3][1].toNumber()==0);
+    	    }).then( (open) => {
+    		App.puzzle.open=open;
     		return App.puzzleInstance.getPuzzleMoreInfo(App.puzzleId);
-    	    } else {
-    		return [-1];
-    	    }
-    	}).then(function(result) {
-    	    if(result[0] !=-1) {
-    		App.puzzle.nplayers = result[3].toNumber();
-    		if(App.puzzle.open) {
-    		    App.puzzle.minFee = result[1];
-    		    App.puzzle.reward = result[2];
-		    return "";
+    	    }).then(function(result) {
+    		if(result[0] !=-1) {
+    		    App.puzzle.nplayers = result[3].toNumber();
+    		    if(App.puzzle.open) {
+    			App.puzzle.minFee = result[1];
+    			App.puzzle.reward = result[2];
+			return "";
+    		    } else {
+    			App.puzzle.creatorCut = result[4];
+    			App.puzzle.finalReward = result[5];
+    			return App.puzzleInstance.getPuzzleWinner(App.puzzleId);
+    		    }		    
+    		}
+    	    }).then( function(result) {
+    		App.puzzle.winner = result;
+		if( App.puzzle.winner.toLowerCase() == App.account.toLowerCase() ) {
+		    App.accountIsWinner = true;
+		}
+    		if( App.puzzle.open ) {
+    		    return App.puzzleInstance.isSigned(App.account,App.puzzleId);
     		} else {
-    		    App.puzzle.creatorCut = result[4];
-    		    App.puzzle.finalReward = result[5];
-    		    return App.puzzleInstance.getPuzzleWinner(App.puzzleId);
-    		}		    
-    	    }
-    	}).then( function(result) {
-    	    App.puzzle.winner = result;
-	    if( App.puzzle.winner.toLowerCase() == App.account.toLowerCase() ) {
-		App.accountIsWinner = true;
-	    }
-    	    if( App.puzzle.checked & App.puzzle.open ) {
-    		return App.puzzleInstance.isSigned(App.account,App.puzzleId);
-    	    } else {
-    		return false;
-    	    }
-    	}).then( function(result) {
-    	    App.accountSigned = result;
-    	});
+    		    return false;
+    		}
+    	    }).then( function(result) {
+    		App.accountSigned = result;
+    	    });
+	});
     },
 
     reloadAccount: function() {
@@ -131,6 +142,7 @@ App = {
     	App.puzzleInstanceSigned = App.puzzleInstance.connect(App.signer);
 	App.puzzleInstance.isSigned(App.account,App.puzzleId).then( function(result) {
     	    App.accountSigned = result;
+	    App.start = true;
     	});
     },
 
@@ -160,9 +172,3 @@ App = {
     
 };
 
-
-$(function() {
-    $(window).load(function() {
-	App.init();
-    });
-});

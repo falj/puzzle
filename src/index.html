@@ -1,8 +1,8 @@
-                               
-   <!-- Created on 08/2021           -->
-   <!-- @author: falj                -->
-   <!-- @site: mathgames.falj.net    -->
-                               
+
+<!-- Created on 08/2021           -->
+<!-- @author: falj                -->
+<!-- @site: mathgames.falj.net    -->
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -32,69 +32,25 @@
           <br/>
         </div>
       </div>
-      <div><p>Here is a list of puzzles created on Ethereum.
+      <div>
 	<p><strong>For now, the contract is available only on the Rinkeby Test Network. Please switch your metamask to the right network before playing</strong> 
 	<p>You can enter a puzzle and try to solve it by paying a fee. The fee will be added to the total reward. The reward is split between the first winner and the creator of the puzzle.
 	<p>You have also the possibility of creating your own puzzle.
 	  <div align='center'>
+	    <button type="button" class="btn btn-primary btn-new" onclick="window.location.href='listPuzzles.html'">List Puzzles</button>&nbsp;&nbsp; 
 	    <button type="button" class="btn btn-primary btn-new" onclick="window.location.href='createPuzzle.html'">Create Puzzle</button> 
 	  </div>
-	<p>source code : 
-	<p>contract address : <span id="contract-address"></span><br/>
-	<p>Feel free to donate :
-	<p>Bitcoin : 1fredXSGtUNwfCxvn3phNFWPFu7mNqBkU
-	<p>Ether : 0x68DdE2b310f7ab4C63C35d851024890377D990eB
+      </div>
+      <p>source code : <a href="https://github.com/falj/puzzle">https://github.com/falj/puzzle</a>
+      <p>Feel free to donate :
+      <p>Bitcoin : 1fredXSGtUNwfCxvn3phNFWPFu7mNqBkU
+      <p>Ether : 0x68DdE2b310f7ab4C63C35d851024890377D990eB
 
-      </div>
-      <hr>
-      <div id="puzzlesRow" class="row">
-	<tbody>
-	</tbody>
-        <!-- PUZZLES LOAD HERE -->
-      </div>
     </div>
-      <template id="puzzleTemplate">
-	<div class="col-sm-6 col-md-4 col-lg-6">
-          <div class="panel panel-default panel-puzzle">
-            <div class="panel-heading">
-              <h3 class="panel-title">Puzzle</h3>
-            </div>
-            <div align="center" class="panel-body">
-	      <a class="puzzle-link-href" href = "">
-		<img alt="140x140" data-src="holder.js/140x140" class="puzzle-img img-rounded img-center" style="width: 50%;" src="" data-holder-rendered="true"></a>
-              <br/><br/>
-	      <strong>ID</strong>: <span class="puzzle-id">0</span><br/>
-	      <strong>Description</strong>: <span class="puzzle-description"></span><br/>
-              <strong>Creator</strong>: <span class="puzzle-creator">creator</span><br/>
-              <strong>Creation</strong>: <span class="puzzle-creationDate"></span> &nbsp; 
-	      <span class="puzzle-endDate"></span>
-	      <table class="table table-striped table-bordered" >
-		<thead>
-		  <tr text-align="center">
-		    <th scope="col" >Reward</th>
-		    <th scope="col" >Min Fee</th>
-		    <th scope="col" >Creator's Cut</th>
-		  </tr>
-		</thead>
-		<tbody>
-		  <tr>
-		    <td><span class="puzzle-reward"></span></td>
-		    <td><span class="puzzle-minFee"></span></td>
-		    <td><span class="puzzle-cut"></span></td>
-		  </tr>
-		</tbody>
-	      </table>
-	      <strong>Players</strong>: <span class="puzzle-nplayers"></span> &nbsp; 
-            </div>
-          </div>
-	</div>
-      </template>
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-    <script src="js/ethers-5.2.umd.min.js" type="application/javascript"></script>
-    <script src="js/listPuzzles.js"></script>
-  </body>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
+</body>
 </html>

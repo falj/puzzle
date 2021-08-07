@@ -26,10 +26,6 @@ contract("Puzzles", (accounts) => {
 	    })
 	    .then(result => {
 		assert(result,1,"1 puzzle");
-		return puzzle.puzzleIsChecked(0);
-	    })
-	    .then(result => {
-		assert.equal( result,false,"puzzle not checked");
 		return puzzle.getPuzzleInfo(0);
 	    })
 	    .then(result => {
@@ -38,14 +34,6 @@ contract("Puzzles", (accounts) => {
 		assert.equal( result[2],"http://link","link");
 		assert.equal( result[3][1].toNumber(),0,"puzzle on");
 		assert.equal( result[4],"@description","description");
-		return puzzle.checkPuzzle(0,web3.utils.asciiToHex("test"),{from:account_one});
-	    })
-	    .then(result => {
-		assert(result,true,"checked puzzle");
-		return puzzle.puzzleIsChecked(0);
-	    })
-	    .then(result => {
-		assert.equal( result,true,"puzzle checked");
 		return puzzle.getPuzzleInfo(0);
 	    })
 	    .then(result => {
@@ -96,14 +84,6 @@ contract("Puzzles", (accounts) => {
 	    })
 	    .then(result => {
 		assert(result,2,"2 puzzles");
-		return puzzle.checkPuzzle(1,web3.utils.asciiToHex("test"),{from:account_one});
-	    })
-	    .then(result => {
-		assert(result,true,"puzzle checked");
-		return puzzle.puzzleIsChecked(1);
-	    })
-	    .then(result => {
-		assert.equal( result,true,"puzzle checked");
 		return puzzle.getPuzzleInfo(1);
 	    })
 	    .then(result => {

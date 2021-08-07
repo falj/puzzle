@@ -14,30 +14,21 @@ let puzzleId = 0;
 let step_to_sign = 2;
 let waitForTransaction = false;
 let xs,ys;
-
-const advices = ['faces','faces','faces','faces','faces']
-const codes = ['14c380ee4d4814ecaa787f37&1d513cc06807e5ee67080e3b&cd372fb85148700fa88095e3492d3f9f5beb43e555e5ff26d95f5a6adc36f8e6',
-	       'b5de89892c22e139e49177b0b79ce3fd4c2ede2c03cd734f&b5df898b2c27e23de5967ab4baa2e6055034e33308d57a57&033c339a7975542785be7423a5b32fa8047813689726214143cdd7939747709c',
-	       '188ac0ef0912f348b34df52c6931281103fe&190c40f28996734e34cff6afeab52a968502ec4ff1cc89a6&9e259b7f6b4c741937a96a9617b3e6b84e166ff6e925e414e7b72936f5a2a51f',
-	       '05cfefff64fc10571f9def139d2767ce27c1d822a6681838a7f1c01121541c5d841ebe1d32de5f883dec21f54ff68580a6730904f59a99ea26419091&d4a9bedd3341e691f5782855d000370ff7050c5d77a84c7d2afa139f2517a068d8abc2df3838e496f37c274ed5023c11fefc145f81a75879370421a4&8f0703d406fdb0ea8011d5de342c3aca62214758a8a2b5b8a4e9f1c8c6c42462',
-	       '157d2b4fefa3011de3c26334d761a191281f6e4b7a92f56f99669010d476576863afac00&95b12cd321a981f4e44c33370c6724ca2ba84057fc66f7f69fedcc185e505ef39db834d42aa885f5e8433b350f6d27c433a03f54fe67f9f7a0f0cc13&ab2e30bf75636a9c97e05099d9ccc9b623c17a44f629e7ce7206dba683028db1',
-	      '0ab255ba5bec2992758bebc8764418a5f36e8d95c454876b9b9cacfedab4f39e77714475cb8eb77e47675b8b3db3c9a9dee1754dae7972fff484752f&0b37c80bb9632b190bdd4b62d5508f433ee9eda35ef3d40990dc27cd6733e9e01541d317c46c362416ea556bdf5a9a4f49f2f8ae69ecde129ae632c5&daf22915f12ba58cc39b49d23780d76732966e4ef68eee56b33b996eefcbfff0']
-
-function preload() {
-    App.init();
-}
+let advices;
+let codes;
+let started = false;
 
 function setup() {
+    App.init();
     createCanvas(windowWidth, windowHeight);
     frameRate(30);
     fsshow = new fsButton(255,255,255);
     fsshow.setButton();
     words = [];
-    nstep = codes.length;
-    init();
 }
 
 function init() {
+    nstep = codes.length;
     cw = min(width,height);
     cx = width/2;
     cy = height/2;
@@ -46,32 +37,40 @@ function init() {
     } else {
 	init_2()
     }
-    //transacting();
     waitForTransaction = false;
     fsshow.setButton();
 }
 
 function draw() {
-    background(color(100));
-    if( waitForTransaction ) {
-	draw_wait();
+    if(!started) {
+	if( App.start ) {
+	    started = true;
+    	    codes = App.codes;
+	    advices = App.advices;
+	    init();
+	}
     } else {
-	if( step % 2 == 1 ) {
-	    draw_keyboard()
+	background(color(100));
+	if( waitForTransaction ) {
+	    draw_wait();
 	} else {
-	    draw_2()
+	    if( step % 2 == 1 ) {
+		draw_keyboard()
+	    } else {
+		draw_2()
+	    }
+	    noStroke();
+	    fill(0);
+	    textAlign(LEFT,BOTTOM);
+	    textSize(cw/40);
+	    if( App.accountIsWinner ) {
+		text("winner "+App.account,cw/20,cw/20)
+	    } else {
+		text(App.account,cw/20,cw/20)
+	    }
+	    draw_steps();
 	}
-	noStroke();
-	fill(0);
-	textAlign(LEFT,BOTTOM);
-	textSize(cw/40);
-	if( App.accountIsWinner ) {
-	    text("winner "+App.account,cw/20,cw/20)
-	} else {
-	    text(App.account,cw/20,cw/20)
-	}
-	draw_steps();
-    } 
+    }
 }
 
 function draw_wait() {

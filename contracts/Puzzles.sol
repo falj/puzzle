@@ -20,7 +20,6 @@ contract Puzzles {
     uint[2] timestamps;
     string link;
     string description;
-    bool checked;
   }
 
   address public owner;
@@ -35,12 +34,6 @@ contract Puzzles {
     _;
   }
 
-  modifier puzzleChecked(uint _id) {
-    require( puzzles[_id].checked, "puzzle checked" );
-    _;
-  }
-
-  
   modifier puzzleOpen(uint _id) {
     require( puzzles[_id].timestamps[1] == 0, "puzzle open" );
     _;
@@ -78,7 +71,7 @@ contract Puzzles {
     return puzzle_number-1;
   }
 
-  function signForPuzzle(uint _id) public payable puzzleExists(_id) puzzleChecked(_id) puzzleOpen(_id)  {
+  function signForPuzzle(uint _id) public payable puzzleExists(_id) puzzleOpen(_id)  {
     require( msg.value >= puzzles[_id].number_info[1], "Minimum entry fee required" );
     require( msg.sender != puzzles[_id].creator, "creator not entering");
     puzzles[_id].number_info[2] += msg.value;
@@ -102,24 +95,10 @@ contract Puzzles {
     return false;
   }
 
-  function checkPuzzle(uint _id, bytes memory _response ) public puzzleExists(_id) puzzleOpen(_id) returns (bool) {
-    require(puzzles[_id].creator == msg.sender,"creator only");
-    bytes32 hash = sha256(_response);
-    if( hash == puzzles[_id].hash_response ) {
-      puzzles[_id].checked = true;
-      return true;
-    }
-    return false;
-  }
-
-  function isSigned(address _address, uint _id) public puzzleExists(_id) puzzleChecked(_id) view returns (bool) {
+  function isSigned(address _address, uint _id) public puzzleExists(_id) view returns (bool) {
     return puzzles[_id].players[_address];
   }
 
-  function puzzleIsChecked( uint _id ) public puzzleExists(_id) view returns(bool) {
-    return puzzles[_id].checked;
-  }
-  
   function getPuzzleInfo( uint _id ) public puzzleExists(_id) view returns( address,
 									    string memory,
 									    string memory,
@@ -132,7 +111,7 @@ contract Puzzles {
 	     puzzles[_id].description);
   }
   
-  function getPuzzleMoreInfo(uint _id) public puzzleExists(_id) puzzleChecked(_id) view returns(uint[6] memory) {
+  function getPuzzleMoreInfo(uint _id) public puzzleExists(_id) view returns(uint[6] memory) {
     return puzzles[_id].number_info;
   }
   function getPuzzleWinner(uint _id) public puzzleExists(_id) puzzleClosed(_id) view returns(address ) {
